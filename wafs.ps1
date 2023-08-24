@@ -76,7 +76,6 @@ function anti {
     fsutil usn deletejournal /d c: 2>$null
 
     # Disable Keylogger
-    Write-Host "[+] Disable Keylogger"
     sc delete DiagTrack 2>$null
     sc delete dmwappushservice 2>$null
     Write-Output "" > C:\ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl 2>$null
@@ -190,7 +189,7 @@ function tools {
     $Path = "$Home\Tools\exif_64.exe"
     Invoke-WebRequest -URI $URL -OutFile $Path 2>$null
 
-    # Download FreeOTF
+    # Download FreeOTFE
     $URL = "https://sourceforge.net/projects/freeotfe.mirror/files/latest/download"
     $Path = "$Home\Tools\FreeOTFE_5_21.exe"
     Invoke-WebRequest -URI $URL -OutFile $Path
