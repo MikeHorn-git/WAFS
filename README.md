@@ -11,6 +11,7 @@ WAFS delete and modify registry keys value and windows services.
 ```bash
 git clone https://github.com/MikeHorn-git/WAFS.git
 cd WAFS
+#Run Powershell with administrator privilege
 .\wafs.ps1
 ```
 
@@ -35,6 +36,15 @@ options:
 # 🛠️ Features
 
 # 🛠️ Tools
+* [Bleachbit](https://www.bleachbit.org/)
+* [BusKill](https://github.com/BusKill/buskill-app)
+* [ClamAV](https://www.clamav.net/)
+* [Delete-self-poc](https://github.com/LloydLabs/delete-self-poc)
+* [ExivPilot](https://www.colorpilot.com/)
+* [FreeOTFE](https://en.wikipedia.org/wiki/FreeOTFE)
+* [SDelete](https://learn.microsoft.com/en-us/sysinternals/downloads/sdelete)
+* [TimeStomper](https://github.com/slyd0g/TimeStomper)
+* [USBSentinel](https://github.com/thereisnotime/xxUSBSentinel/)
 
 # ✉️ Credits
 * [Awesome anti-forensic](https://github.com/shadawck/awesome-anti-forensic)
