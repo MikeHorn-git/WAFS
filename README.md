@@ -39,7 +39,7 @@ options:
    * Firefox cache
    * Firefox history
    * Last-Visited MRU
-   * OpenSaveMRU
+   * OpenSave MRU
    * PowerShell history
    * Recent items
    * Recycle bin
