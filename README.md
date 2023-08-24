@@ -3,9 +3,7 @@
 ![black-windows-10-logo](https://github.com/MikeHorn-git/WAFS/assets/123373126/32917e73-50f1-41f5-931b-1ad7304f4db1)
 
 # ⚠️ Warning
-Make a backup of your files and your registry before execute this script.
-WAFS delete and modify registry keys value and windows services.
-
+Make a backup of your files and your registry before execute this script. WAFS delete and modify registry keys values and windows services.
 
 # 👷 Installation
 ```bash
@@ -34,6 +32,40 @@ options:
 ```
 
 # 🛠️ Features
+* Clean
+   * Chrome cache
+   * Chrome history
+   * DNS cache
+   * Firefox cache
+   * Firefox history
+   * Last-Visited MRU
+   * OpenSaveMRU
+   * PowerShell history
+   * Recent items
+   * Recycle bin
+   * Run command history
+   * Shadow copies
+   * Shellbags
+   * Simcache
+   * System Resource Usage Monitor
+   * Tempory files
+   * Thumbcache
+   * USB history
+   * User Assist
+   * VPN cache
+   * Windows Timeline
+  
+* Disable
+  * Keylogger
+  * NTFS Last Acces Time
+  * Prefetch
+  * Shadow Copies
+  * Shellbags
+  * User Assist
+  * UsnJrnl
+
+* Remove
+  * Cortana
 
 # 🛠️ Tools
 * [Bleachbit](https://www.bleachbit.org/)
