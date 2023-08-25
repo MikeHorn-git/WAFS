@@ -36,11 +36,11 @@ options:
 
 # 🛠️ Features
 * Clean
-   * Chrome cache/history
+   * Chrome cache - history - session restore
    * DNS cache
-   * Edge cache/history
+   * Edge cache - history
    * Firefox cache/history
-   * Internet Explorer cache/history
+   * Internet Explorer cache - history - session restore
    * Last-Visited MRU
    * OpenSave MRU
    * Plug and Play logs
