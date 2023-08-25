@@ -43,6 +43,7 @@ options:
    * Internet Explorer cache/history
    * Last-Visited MRU
    * OpenSave MRU
+   * Plug and Play logs
    * PowerShell history
    * Prefetch
    * Recent items
@@ -91,4 +92,5 @@ options:
 
 # 📡 To-Do
 - [ ] Add an option to shred files rather than delete them.
-- [ ] Improve the script skills
+- [ ] Add an option to choose logging or not the script.
+- [ ] Improve the script skills.
