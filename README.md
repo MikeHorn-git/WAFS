@@ -80,10 +80,11 @@ options:
 * [ClamAV](https://www.clamav.net/)
 * [Delete-self-poc](https://github.com/LloydLabs/delete-self-poc)
 * [ExivPilot](https://www.colorpilot.com/)
-* [FreeOTFE](https://en.wikipedia.org/wiki/FreeOTFE)
+* [KeePassXC](https://keepassxc.org/)
 * [SDelete](https://learn.microsoft.com/en-us/sysinternals/downloads/sdelete)
 * [TimeStomper](https://github.com/slyd0g/TimeStomper)
 * [USBSentinel](https://github.com/thereisnotime/xxUSBSentinel/)
+* [VeraCrypt](https://www.veracrypt.fr/en/Home.html)
 
 # ✉️ Credits
 * [Awesome anti-forensic](https://github.com/shadawck/awesome-anti-forensic)
