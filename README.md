@@ -1,9 +1,12 @@
 # 🔐 Windows Anti-Forensics Script
 
-![black-windows-10-logo](https://github.com/MikeHorn-git/WAFS/assets/123373126/32917e73-50f1-41f5-931b-1ad7304f4db1)
+![BlackWindows](https://github.com/MikeHorn-git/WAFS/assets/123373126/1667f6e9-273a-4f02-b242-d95659ed76e0)
 
 # ⚠️ Warning
-Make a backup of your files and your registry before execute this script. WAFS delete and modify registry keys values and windows services.
+Backup your files and your registry before.
+
+# 🔍 Description
+Windows Anti-Forensics Script (WAFS) written in Powershell aim to make forensics investigations on a windows OS more difficult. WAFS allow you to clean/disable certains files, services, registry keys and install some anti-forensics tools with a log feature.
 
 # 👷 Installation
 ```bash
@@ -33,16 +36,17 @@ options:
 
 # 🛠️ Features
 * Clean
-   * Chrome cache
-   * Chrome history
+   * Chrome cache/history
    * DNS cache
-   * Firefox cache
-   * Firefox history
+   * Edge cache/history
+   * Firefox cache/history
+   * Internet Explorer cache/history
    * Last-Visited MRU
    * OpenSave MRU
    * PowerShell history
+   * Prefetch
    * Recent items
-   * Recycle bin
+   * RecycleBin
    * Run command history
    * Shadow copies
    * Shellbags
@@ -63,6 +67,7 @@ options:
   * Shellbags
   * User Assist
   * UsnJrnl
+  * Windows Event Logs
 
 * Remove
   * Cortana
@@ -80,8 +85,9 @@ options:
 
 # ✉️ Credits
 * [Awesome anti-forensic](https://github.com/shadawck/awesome-anti-forensic)
-* [Hacktricks](https://book.hacktricks.xyz/generic-methodologies-and-resources/basic-forensic-methodology/anti-forensic-techniques#disable-shadow-copies).
-* [Sans Forensics](https://www.sans.org/posters/windows-forensic-analysis/).
+* [Background](https://wallpapercave.com/wp/wp3438728.jpg)
+* [Hacktricks](https://book.hacktricks.xyz/generic-methodologies-and-resources/basic-forensic-methodology/anti-forensic-techniques#disable-shadow-copies)
+* [Sans Forensics](https://www.sans.org/posters/windows-forensic-analysis/)
 
 # 📡 To-Do
 - [ ] Add an option to shred files rather than delete them.
