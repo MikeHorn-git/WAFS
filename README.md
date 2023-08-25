@@ -13,7 +13,7 @@ Windows Anti-Forensics Script (WAFS) written in Powershell aim to make forensics
 git clone https://github.com/MikeHorn-git/WAFS.git
 cd WAFS
 #Run Powershell with administrator privilege
-.\wafs.ps1
+.\WAFS.ps1
 ```
 
 # 🪶 Usage
@@ -69,6 +69,7 @@ options:
   * User Assist
   * UsnJrnl
   * Windows Event Logs
+  * Windows Timeline
 
 * Remove
   * Cortana
