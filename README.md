@@ -39,7 +39,7 @@ options:
    * Chrome cache - history - session restore
    * DNS cache
    * Edge cache - history
-   * Firefox cache/history
+   * Firefox cache - history
    * Internet Explorer cache - history - session restore
    * Last-Visited MRU
    * OpenSave MRU
