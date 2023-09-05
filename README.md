@@ -6,7 +6,7 @@
 Backup your files and your registry before.
 
 # 🔍 Description
-Windows Anti-Forensics Script (WAFS) written in Powershell aim to make forensics investigations on a windows OS more difficult. WAFS allow you to clean/disable certain files, services, registry keys and install some anti-forensics tools to counter forensics analysis with a log feature.
+Windows Anti-Forensics Script (WAFS) written in Powershell aim to make forensics investigations on a windows OS more difficult. WAFS allow you to clean/disable certain files, services, registry keys and install some anti-forensics tools to counter forensics analysis. The script save outputs to a log file.
 
 # 👷 Installation
 ```bash
@@ -94,5 +94,5 @@ options:
 
 # 📡 To-Do
 - [ ] Add an option to shred files rather than delete them.
-- [ ] Add an option to choose logging or not the script.
+- [ ] Add an option to logging or not the script.
 - [ ] Improve the script skills.
