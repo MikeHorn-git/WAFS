@@ -1,14 +1,14 @@
-# 🔐 Windows Anti-Forensics Script
+# Windows Anti-Forensics Script
 
 ![BlackWindows](https://github.com/MikeHorn-git/WAFS/assets/123373126/1667f6e9-273a-4f02-b242-d95659ed76e0)
 
 # ⚠️ Warning
-Backup your files and your registry before.
+Backup your data and your registry before.
 
-# 🔍 Description
-Windows Anti-Forensics Script (WAFS) written in Powershell aim to make forensics investigations on a windows OS more difficult. WAFS allow you to clean/disable certain files, services, registry keys and install some anti-forensics tools to counter forensics analysis. The script save outputs to a log file.
+# Description
+Windows Anti-Forensics Script (WAFS) aim to make forensics investigations on a Windows OS more difficult. WAFS allow you to clean/disable certain files, services, registry keys. And WAFS provide some anti-forensics tools to improve countering forensics analysis.
 
-# 👷 Installation
+# Installation
 ```bash
 git clone https://github.com/MikeHorn-git/WAFS.git
 cd WAFS
@@ -74,7 +74,7 @@ options:
 * Remove
   * Cortana
 
-# 🛠️ Tools
+# Tools
 * [Bleachbit](https://www.bleachbit.org/)
 * [BusKill](https://github.com/BusKill/buskill-app)
 * [ClamAV](https://www.clamav.net/)
@@ -86,13 +86,7 @@ options:
 * [USBSentinel](https://github.com/thereisnotime/xxUSBSentinel/)
 * [VeraCrypt](https://www.veracrypt.fr/en/Home.html)
 
-# ✉️ Credits
+# Credits
 * [Awesome anti-forensic](https://github.com/shadawck/awesome-anti-forensic)
 * [Background](https://wallpapercave.com/wp/wp3438728.jpg)
-* [Hacktricks](https://book.hacktricks.xyz/generic-methodologies-and-resources/basic-forensic-methodology/anti-forensic-techniques#disable-shadow-copies)
 * [Sans Forensics](https://www.sans.org/posters/windows-forensic-analysis/)
-
-# 📡 To-Do
-- [ ] Add an option to shred files rather than delete them.
-- [ ] Add an option to logging or not the script.
-- [ ] Improve the script skills.
