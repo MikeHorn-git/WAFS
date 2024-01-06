@@ -3,7 +3,7 @@
 #################################################################################
 #MIT License                                                                    #
 #                                                                               #
-#Copyright (c) 2023 MikeHorn-git                                                #
+#Copyright (c) 2023-2024 MikeHorn-git                                           #
 #                                                                               #
 #Permission is hereby granted, free of charge, to any person obtaining a copy	#
 #of this software and associated documentation files (the "Software"), to deal	#
@@ -23,7 +23,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE	#
 #SOFTWARE.                                                                      #
 #################################################################################
-
+[CmdletBinding()]
 param (
     [switch]$all,
     [switch]$anti,
@@ -32,7 +32,7 @@ param (
 
 function anti {
 
-    Write-Host '[+] Anti-Forensics Script' -foregroundcolor "DarkGray"
+    Write-Output '[+] Anti-Forensics Script' -foregroundcolor "DarkGray"
 
     # Disable Audit Success logs
     auditpol /set /subcategory:"Filtering Platform Connection" /success:disable /failure:enable 2>$null
@@ -95,24 +95,24 @@ function anti {
 
     # Clean Plug and Play Logs
     Remove-Item -Path "C:\Windows\INF\setupapi.dev*\" -Force 2>$null
-    
+
     # Disable Prefetch
     Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' | New-ItemProperty -Name 'EnablePrefetcher' -Value "0" -PropertyType DWORD -Force >$null
     Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' | New-ItemProperty -Name 'EnableSuperfetch' -Value "0" -PropertyType DWORD -Force >$null
 
     # Clean Prefetch
     Remove-Item -Path "C:\Windows\Prefetch" -Recurse -Force 2>$null
-    
+
     # Clean Recent Items
     Remove-Item -Path "$HOME\AppData\Roaming\Microsoft\Windows\Recent" -Recurse 2>$null
     Remove-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs' -Recurse -Force 2>$null
-    
+
     # Clean RecycleBin
     Clear-RecycleBin -Force 2>$null
 
     # Clean Run Command history
     Remove-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU' -Recurse -Force 2>$null
-    
+
     # Disable Shadow Copies
     Remove-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\BackupRestore\FilesNotToBackup' -Recurse -Force 2>$null
 
@@ -123,7 +123,7 @@ function anti {
     vssadmin delete shadows /All >$null
 
     # Disable ShellBags
-    Get-Item -Path 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell' | New-ItemProperty -Name 'BagMRU Size' -Value "1" -PropertyType DWORD -Force >$null 
+    Get-Item -Path 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell' | New-ItemProperty -Name 'BagMRU Size' -Value "1" -PropertyType DWORD -Force >$null
 
     # Clean ShellBags
     Remove-Item -Path 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell' -Recurse -Force 2>$null
@@ -133,20 +133,20 @@ function anti {
 
     # Clean Simcache
     Remove-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\' -Recurse -Force 2>$null
- 
+
     # Clean System Resource Usage Monitor database
     Remove-Item -Path "C:\Windows\System32\sru\SRUDB.dat" -Force 2>$null
 
     # Clean Temp files
     Remove-Item -Path "C:\Windows\temp\*" -Recurse -Force 2>$null
-    
+
     # Clean Thumbcache
     Remove-Item -Path "$Home\AppData\Local\Microsoft\Windows\Explorer\thumbcache*.db\" -Recurse -Force 2>$null
 
     # Clean USB history
     Remove-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR' -Recurse -Force 2>$null
     Remove-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Enum\USB' -Recurse -Force 2>$null
-    
+
     # Disable UserAssist
     Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' | New-ItemProperty -Name 'Start_TrackProgs' -Value "0" -PropertyType DWORD -Force >$null
     Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' | New-ItemProperty -Name 'Start_TrackEnabled' -Value "0" -PropertyType DWORD -Force >$null
@@ -163,16 +163,16 @@ function anti {
 
     # Clean Windows Event logs
     wevtutil el | Foreach-Object {wevtutil cl "$_"} 2>$null
-    
+
     # Clean Windows logs
     Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log } 2>$null
 
     # Disable Windows Timeline DB
     Stop-Service -Name CDPUserSvc* -Force 2>$null
-    
+
     # Clean Windows Timeline DB
     Remove-Item -Path "$Home\AppData\Local\ConnectedDevicesPlatform\*\ActivitiesCache.db" -Force
-  
+
     # Disable $UsnJrnl
     fsutil usn deletejournal /d c: 2>$null
 
@@ -180,88 +180,70 @@ function anti {
     Remove-Item -Path "$HOME\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt" -Force 2>$null
     Clear-History 2>$null
 
-    Write-Host '[+] Done, reboot your system' -foregroundcolor "DarkGray"
+    Write-Output '[+] Done, reboot your system' -foregroundcolor "DarkGray"
     Exit 0
 }
 
 
 function tools {
 
-    Write-Host '[+] Tools Script' -foregroundcolor "DarkGray"
-
-    # Create Tools folder
+    Write-Output '[+] Tools Script' -foregroundcolor "DarkGray"
     New-Item -Path "$HOME" -Name "Tools" -ItemType Directory >$null
 
-    # Download Bleachbit
-    $URL = "https://www.bleachbit.org/download/file/t?file=BleachBit-4.4.2-portable.zip"
-    $Path = "$Home\Tools\BleachBit-4.4.2-portable.zip"
-    Invoke-WebRequest -URI $URL -OutFile $Path
-    Expand-Archive $Path -DestinationPath "$HOME\Tools\" 2>$null
-    Remove-Item $Path 2>$null
+    # Download and install some programs
+    $FastURL = [ordered]@{
+        DSPURL = "https://github.com/LloydLabs/delete-self-poc/releases/download/v1.1/ds_x64.exe"
+        ExifURL = "https://www.two-pilots.com/colorpilot.com/load/exif_64.exe"
+        TimestomperURL = "https://github.com/slyd0g/TimeStomper/blob/master/Release/TimeStomper.exe"
+        USBSentinelURL = "https://github.com/thereisnotime/xxUSBSentinel/releases/download/v1/xxUSBSentinel.exe"
+        VeracryptURL = "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt%20Portable%201.25.9.exe"
+    }
 
-    # Download BusKill
-    $URL = "https://github.com/BusKill/buskill-app/releases/download/v0.7.0/buskill-win-v0.7.0-x86_64.zip"
-    $Path = "$Home\Tools\buskill.zip"
-    Invoke-WebRequest -URI $URL -OutFile $Path
-    Expand-Archive $Path -DestinationPath "$HOME\Tools\" 2>$null
-    Remove-Item $Path
-    
-    # Download ClamAV
-    $URL = "https://www.clamav.net/downloads/production/clamav-1.1.1.win.x64.zip"
-    $Path = "$Home\Downloads\clamav-1.1.1.win.x64.zip"
-    Invoke-WebRequest -URI $URL -OutFile $Path
-    Expand-Archive $Path -DestinationPath "$HOME\Tools\" 2>$null
-    Remove-Item $Path 2>$null
+    foreach ($key in $FastURL.Keys) {
+        $url = $FastURL[$key]
+        $outputPath = "$Home\Tools\$key"
 
-    # Download delete-self-poc
-    $URL = "https://github.com/LloydLabs/delete-self-poc/releases/download/v1.1/ds_x64.exe"
-    $Path = "$Home\Tools\ds_x64.exe"
-    Invoke-WebRequest -URI $URL -OutFile $Path 2>$null
+        Invoke-WebRequest -Uri $url -OutFile $outputPath -ErrorAction SilentlyContinue
+        if ($LASTEXITCODE -eq 0) {
+            Write-Output "Downloaded $key from $url to $outputPath"
+        } else {
+            Write-Error "Failed to download $key from $url"
+        }
+    }
 
-    # Download Exifpilot
-    $URL = "https://www.two-pilots.com/colorpilot.com/load/exif_64.exe"
-    $Path = "$Home\Tools\exif_64.exe"
-    Invoke-WebRequest -URI $URL -OutFile $Path 2>$null
 
-    # Download KeePassXC
-    $URL = "https://github.com/keepassxreboot/keepassxc/releases/download/2.7.6/KeePassXC-2.7.6-Win64.zip"
-    $Path = "$Home\Tools\KeePassXC.zip"
-    Invoke-WebRequest -URI $URL -OutFile $Path 2>$null
-    Expand-Archive $Path -DestinationPath "$HOME\Tools\" 2>$null
-    Remove-Item $Path 2>$null
+    $LongURL = [ordered]@{
+        BleachbitURL = "https://www.bleachbit.org/download/file/t?file=BleachBit-4.4.2-portable.zip"
+        BuskillURL = "https://github.com/BusKill/buskill-app/releases/download/v0.7.0/buskill-win-v0.7.0-x86_64.zip"
+        ClamavURL = "https://www.clamav.net/downloads/production/clamav-1.1.1.win.x64.zip"
+        SdeleteURL = "https://download.sysinternals.com/files/SDelete.zip"
+    }
 
-    # Download SDelete (sysinternal suite)
-    $URL = "https://download.sysinternals.com/files/SDelete.zip"
-    $Path = "$Home\Tools\SDelete.zip"
-    Invoke-WebRequest -URI $URL -OutFile $Path
-    Expand-Archive $Path -DestinationPath "$HOME\Tools\SDelete" 2>$null
-    Remove-Item $Path 2>$null
+    foreach ($key in $LongURL.Keys) {
+        $url = $LongURL[$key]
+        $downloadPath = "$Home\Downloads\$key.zip"
+        $extractPath = "$Home\Tools\$key"
 
-    # Download Timestomper
-    $URL = "https://github.com/slyd0g/TimeStomper/blob/master/Release/TimeStomper.exe"
-    $Path = "$Home\Tools\TimeStomper.exe"
-    Invoke-WebRequest -URI $URL -OutFile $Path 2>$null
-
-    # Download USB Sentinel
-    $URL = "https://github.com/thereisnotime/xxUSBSentinel/releases/download/v1/xxUSBSentinel.exe"
-    $Path = "$Home\Tools\xxUSBSentinel.exe"
-    Invoke-WebRequest -URI $URL -OutFile $Path 2>$null
-
-    # Download VeraCrypt
-    $URL = "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt%20Portable%201.25.9.exe"
-    $Path = "$Home\Tools\VeraCrypt.exe"
-    Invoke-WebRequest -URI $URL -OutFile $Path
+        Invoke-WebRequest -Uri $url -OutFile $downloadPath -ErrorAction SilentlyContinue
+        if ($LASTEXITCODE -eq 0) {
+            Write-Output "Downloaded $key from $url to $downloadPath"
+            Expand-Archive -Path $downloadPath -DestinationPath $extractPath -Force
+            Write-Output "Extracted $key to $extractPath"
+        } else {
+            Write-Error "Failed to download $key from $url"
+        }
+    }
 }
 
 function usage {
-    Write-Host "
+    Write-Output "
     ██╗    ██╗ █████╗ ███████╗███████╗
     ██║    ██║██╔══██╗██╔════╝██╔════╝
     ██║ █╗ ██║███████║█████╗  ███████╗
     ██║███╗██║██╔══██║██╔══╝  ╚════██║
     ╚███╔███╔╝██║  ██║██║     ███████║
     ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝     ╚══════╝
-                                  
+
     Windows Anti-Forensics Script
 
     Syntax: wafs.ps1 -[all|anti|tools]
@@ -287,7 +269,7 @@ function main {
     elseif ($tools){
         Start-Transcript -Path ".\logs_tools.txt"
         tools
-        Write-Host '[+] Done, reboot your system' -foregroundcolor "DarkGray"
+        Write-Output '[+] Done, reboot your system' -foregroundcolor "DarkGray"
         Exit 0
         Stop-Transcript
     }
@@ -295,4 +277,4 @@ function main {
         usage
     }
 }
-main:qa
+main
