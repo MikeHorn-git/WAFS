@@ -16,7 +16,7 @@ cd WAFS
 .\WAFS.ps1
 ```
 
-# 🪶 Usage
+# Usage
 ```bash
 ██╗    ██╗ █████╗ ███████╗███████╗
 ██║    ██║██╔══██╗██╔════╝██╔════╝
@@ -34,7 +34,7 @@ options:
 -tools              Install anti-forensics tools.
 ```
 
-# 🛠️ Features
+# Features
 * Clean
    * Chrome cache - history - session restore
    * DNS cache
