@@ -33,7 +33,7 @@ param (
 
 function anti {
 
-    Write-Output '[+] Anti-Forensics Script' -foregroundcolor "DarkGray"
+    Write-Output '[+] Anti-Forensics Script'
 
     $PathsToRemove = @{
         'ChromeCache'           = "$Home\AppData\Local\Google\Chrome\User Data\Default\Cache"                                   # Clean Chrome cache
@@ -148,23 +148,23 @@ function anti {
         Write-Error "An error occurred: $_"
     }
 
-    Write-Output '[+] Done, reboot your system' -foregroundcolor "DarkGray"
+    Write-Output '[+] Done, reboot your system'
     Exit 0
 }
 
 
 function tools {
 
-    Write-Output '[+] Tools Script' -foregroundcolor "DarkGray"
+    Write-Output '[+] Tools Script'
     New-Item -Path "$HOME" -Name "Tools" -ItemType Directory >$null
 
     # Download and install some programs
     $FastURL = [ordered]@{
-        DSPURL         = "https://github.com/LloydLabs/delete-self-poc/releases/download/v1.1/ds_x64.exe"
-        ExifURL        = "https://www.two-pilots.com/colorpilot.com/load/exif_64.exe"
-        TimestomperURL = "https://github.com/slyd0g/TimeStomper/blob/master/Release/TimeStomper.exe"
-        USBSentinelURL = "https://github.com/thereisnotime/xxUSBSentinel/releases/download/v1/xxUSBSentinel.exe"
-        VeracryptURL   = "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt%20Portable%201.25.9.exe"
+        DSP         = "https://github.com/LloydLabs/delete-self-poc/releases/download/v1.1/ds_x64.exe"
+        Exif        = "https://www.two-pilots.com/colorpilot.com/load/exif_64.exe"
+        Timestomper = "https://github.com/slyd0g/TimeStomper/blob/master/Release/TimeStomper.exe"
+        USBSentinel = "https://github.com/thereisnotime/xxUSBSentinel/releases/download/v1/xxUSBSentinel.exe"
+        Veracrypt   = "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt%20Portable%201.25.9.exe"
     }
 
     foreach ($key in $FastURL.Keys) {
@@ -182,10 +182,10 @@ function tools {
 
 
     $LongURL = [ordered]@{
-        BleachbitURL = "https://www.bleachbit.org/download/file/t?file=BleachBit-4.4.2-portable.zip"
-        BuskillURL   = "https://github.com/BusKill/buskill-app/releases/download/v0.7.0/buskill-win-v0.7.0-x86_64.zip"
-        ClamavURL    = "https://www.clamav.net/downloads/production/clamav-1.1.1.win.x64.zip"
-        SdeleteURL   = "https://download.sysinternals.com/files/SDelete.zip"
+        Bleachbit = "https://www.bleachbit.org/download/file/t?file=BleachBit-4.4.2-portable.zip"
+        Buskill   = "https://github.com/BusKill/buskill-app/releases/download/v0.7.0/buskill-win-v0.7.0-x86_64.zip"
+        Clamav    = "https://www.clamav.net/downloads/production/clamav-1.1.1.win.x64.zip"
+        Sdelete   = "https://download.sysinternals.com/files/SDelete.zip"
     }
 
     foreach ($key in $LongURL.Keys) {
@@ -239,7 +239,7 @@ function main {
     elseif ($tools) {
         Start-Transcript -Path ".\logs_tools.txt"
         tools
-        Write-Output '[+] Done, reboot your system' -foregroundcolor "DarkGray"
+        Write-Output '[+] Done, reboot your system'
         Exit 0
         Stop-Transcript
     }
