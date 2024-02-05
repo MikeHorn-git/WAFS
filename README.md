@@ -10,8 +10,7 @@ Windows Anti-Forensics Script (WAFS) aim to make forensics investigations on a W
 
 # Installation
 ```bash
-git clone https://github.com/MikeHorn-git/WAFS.git
-cd WAFS
+Invoke-WebRequest https://raw.githubusercontent.com/MikeHorn-git/WAFS/main/WAFS.ps1 -Outfile WAFS.ps1
 #Run Powershell with administrator privilege
 .\WAFS.ps1
 ```
