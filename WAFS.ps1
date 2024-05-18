@@ -1,4 +1,4 @@
-﻿#Requires -RunAsAdministrator
+#Requires -RunAsAdministrator
 
 #################################################################################
 #MIT License                                                                    #
@@ -24,6 +24,36 @@
 #SOFTWARE.                                                                      #
 #################################################################################
 
+<#
+    .SYNOPSIS
+    Windows Anti-Forensics Script (WAFS) hardened your Windows OS against forensics analysis.
+
+    .DESCRIPTION
+    Windows Anti-Forensics Script (WAFS) aim to make forensics investigations on a Windows OS more difficult.
+    WAFS allow you to clean/disable certain files, services, registry keys.
+    And WAFS provide some anti-forensics tools to improve countering forensics analysis.
+
+    To execute this script:
+      1) Open PowerShell window as administrator
+      2) Execute the script by running ".\WAFS.ps1"
+
+    .PARAMETER all
+    Current user password to allow reboot resiliency via Boxstarter. The script prompts for the password if not provided.
+
+    .PARAMETER anti
+    Switch parameter indicating a password is not needed for reboots.
+
+    .EXAMPLE
+    .\WAFS.ps1 -anti
+
+    Description
+    ---------------------------------------
+    Disable and clear certains windows features and parameters for anti-forensics.
+
+    .LINK
+    https://github.com/MikeHorn-git/WAFS
+#>
+
 [CmdletBinding()]
 param (
     [switch]$all,
@@ -31,44 +61,43 @@ param (
     [switch]$tools
 )
 
-function anti {
-
+function Invoke-AntiForensics {
     Write-Output '[+] Anti-Forensics Script'
 
     $PathsToRemove = @{
-        'ChromeCache'           = "$Home\AppData\Local\Google\Chrome\User Data\Default\Cache"                                   # Clean Chrome cache
-        'ChromeHistory'         = "$Home\AppData\Local\Google\Chrome\User Data\Default\History"                                 # Clean Chrome history
-        'ChromeSessionRestore'  = "$Home\AppData\Local\Google\Chrome\User Data\Default"                                         # Clean Chrome Session Restore
-        'EdgeCache'             = "$Home\AppData\Local\Packages\microsoft.microsoftedge_*\AC\MicrosoftEdge\Cache"               # Clean Edge cache
-        'IEHistory'             = 'HKCU:\Software\Microsoft\Internet Explorer\TypedURLs'                                        # Clean Edge / Internet Explorer history
-        'IEWebCache'            = "$Home\AppData\Local\Microsoft\Windows\WebCache\WebCacheV*.dat"                               # Clean Edge / Internet Explorer history
-        'FirefoxCache'          = "$Home\AppData\Local\Mozilla\Firefox\Profiles\*.default\Cache"                                # Clean Firefox cache
-        'FirefoxHistory'        = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default\places.sqlite"                      # Clean Firefox history
-        'FirefoxSessionRestore' = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default\sessionstore.js"                    # Clean Firefox Session Restore
-        'IECache'               = "$Home\AppData\Local\Microsoft\Windows\INetCache\IE"                                          # Clean Internet Explorer cache
-        'IECacheStorage'        = "$Home\AppData\Local\Microsoft\Internet Explorer\CacheStorage"                                # Clean Internet Explorer cache
-        'IESessionRestore'      = "$Home\AppData\Local\Microsoft\Internet Explorer\Recovery"                                    # Clean Internet Explorer Session Restore
-        'LastVisitedMRU'        = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU'        # Clean Last-Visited MRU
-        'OpenSaveMRU'           = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU'           # Clean OpenSaveMRU
-        'PlugAndPlayLogs'       = "C:\Windows\INF\setupapi.dev*\"                                                               # Clean Plug and Play Logs
-        'Prefetch'              = "C:\Windows\Prefetch"                                                                         # Clean Prefetch
-        'RecentItems'           = "$HOME\AppData\Roaming\Microsoft\Windows\Recent"                                              # Clean Recent Items
-        'RecentDocs'            = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs'                         # Clean Recent Items
-        'RunMRU'                = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU'                             # Clean Run Command history
-        'ShadowCopies'          = 'HKLM:\SYSTEM\CurrentControlSet\Control\BackupRestore\FilesNotToBackup'                       # Disable Shadow Copies
-        'ShellBags'             = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell'                      # Clean ShellBags
-        'ShellNoRoam'           = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\ShellNoRoam'                # Clean ShellBags
-        'ShellWow6432'          = 'HKCU:\Software\Classes\Wow6432Node\Local Settings\Software\Microsoft\Windows\Shell\'         # Clean ShellBags
-        'Simcache'              = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\'                      # Clean Simcache
-        'SRUDB'                 = "C:\Windows\System32\sru\SRUDB.dat"                                                           # Clean System Resource Usage Monitor database
-        'TempFiles'             = "C:\Windows\temp\*"                                                                           # Clean Temp files
-        'Thumbcache'            = "$Home\AppData\Local\Microsoft\Windows\Explorer\thumbcache*.db\"                              # Clean Thumbcache
-        'USBHistory'            = 'HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR'                                                 # Clean USB history
-        'USBEnum'               = 'HKLM:\SYSTEM\CurrentControlSet\Enum\USB'                                                     # Clean USB history
-        'UserAssist'            = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\'                        # Clean UserAssist
-        'VPNCache'              = 'HKLM:\Microsoft\Windows NT\CurrentVersion\NetworkList\Nla\Cache'                             # Clean VPN cache
-        'TimelineDB'            = "$Home\AppData\Local\ConnectedDevicesPlatform\*\ActivitiesCache.db"                           # Clean Windows Timeline DB
-        'PowerShellHistory'     = "$HOME\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"       # Clean Powershell history
+        'ChromeCache'           = "$Home\AppData\Local\Google\Chrome\User Data\Default\Cache"
+        'ChromeHistory'         = "$Home\AppData\Local\Google\Chrome\User Data\Default\History"
+        'ChromeSessionRestore'  = "$Home\AppData\Local\Google\Chrome\User Data\Default"
+        'EdgeCache'             = "$Home\AppData\Local\Packages\microsoft.microsoftedge_*\AC\MicrosoftEdge\Cache"
+        'IEHistory'             = 'HKCU:\Software\Microsoft\Internet Explorer\TypedURLs'
+        'IEWebCache'            = "$Home\AppData\Local\Microsoft\Windows\WebCache\WebCacheV*.dat"
+        'FirefoxCache'          = "$Home\AppData\Local\Mozilla\Firefox\Profiles\*.default\Cache"
+        'FirefoxHistory'        = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default\places.sqlite"
+        'FirefoxSessionRestore' = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default\sessionstore.js"
+        'IECache'               = "$Home\AppData\Local\Microsoft\Windows\INetCache\IE"
+        'IECacheStorage'        = "$Home\AppData\Local\Microsoft\Internet Explorer\CacheStorage"
+        'IESessionRestore'      = "$Home\AppData\Local\Microsoft\Internet Explorer\Recovery"
+        'LastVisitedMRU'        = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU'
+        'OpenSaveMRU'           = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU'
+        'PlugAndPlayLogs'       = "C:\Windows\INF\setupapi.dev*"
+        'Prefetch'              = "C:\Windows\Prefetch"
+        'RecentItems'           = "$HOME\AppData\Roaming\Microsoft\Windows\Recent"
+        'RecentDocs'            = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs'
+        'RunMRU'                = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU'
+        'ShadowCopies'          = 'HKLM:\SYSTEM\CurrentControlSet\Control\BackupRestore\FilesNotToBackup'
+        'ShellBags'             = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell'
+        'ShellNoRoam'           = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\ShellNoRoam'
+        'ShellWow6432'          = 'HKCU:\Software\Classes\Wow6432Node\Local Settings\Software\Microsoft\Windows\Shell\'
+        'Simcache'              = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\'
+        'SRUDB'                 = "C:\Windows\System32\sru\SRUDB.dat"
+        'TempFiles'             = "C:\Windows\temp\*"
+        'Thumbcache'            = "$Home\AppData\Local\Microsoft\Windows\Explorer\thumbcache*.db\"
+        'USBHistory'            = 'HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR'
+        'USBEnum'               = 'HKLM:\SYSTEM\CurrentControlSet\Enum\USB'
+        'UserAssist'            = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\'
+        'VPNCache'              = 'HKLM:\Microsoft\Windows NT\CurrentVersion\NetworkList\Nla\Cache'
+        'TimelineDB'            = "$Home\AppData\Local\ConnectedDevicesPlatform\*\ActivitiesCache.db"
+        'PowerShellHistory'     = "$HOME\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
     }
 
     foreach ($pathKey in $PathsToRemove.Keys) {
@@ -102,35 +131,35 @@ function anti {
         Write-Output "" > C:\ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl 2>$null
 
         # Disable NTFS Last Access Time
-        Get-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' | New-ItemProperty -Name 'NtfsDisableLastAccessUpdate' -Value "1" -PropertyType DWORD -Force >$null
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'NtfsDisableLastAccessUpdate' -Value 1 -Force
         fsutil behavior set disablelastaccess 3 >$null
 
         # Disable Prefetch
-        Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' | New-ItemProperty -Name 'EnablePrefetcher' -Value "0" -PropertyType DWORD -Force >$null
-        Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' | New-ItemProperty -Name 'EnableSuperfetch' -Value "0" -PropertyType DWORD -Force >$null
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' -Name 'EnablePrefetcher' -Value 0 -Force
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' -Name 'EnableSuperfetch' -Value 0 -Force
 
         # Clean RecycleBin
         Clear-RecycleBin -Force 2>$null
 
         # Disable previous Shadow Copies
-        Get-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\' | New-ItemProperty -Name 'DisableLocalPage' -Value "1" -PropertyType DWORD -Force >$null
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\' -Name 'DisableLocalPage' -Value 1 -Force
 
         # Clean Shadow Copies
         vssadmin delete shadows /All >$null
 
         # Disable ShellBags
-        Get-Item -Path 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell' | New-ItemProperty -Name 'BagMRU Size' -Value "1" -PropertyType DWORD -Force >$null
+        Set-ItemProperty -Path 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell' -Name 'BagMRU Size' -Value 1 -Force
 
         # Disable UserAssist
-        Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' | New-ItemProperty -Name 'Start_TrackProgs' -Value "0" -PropertyType DWORD -Force >$null
-        Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' | New-ItemProperty -Name 'Start_TrackEnabled' -Value "0" -PropertyType DWORD -Force >$null
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' -Name 'Start_TrackProgs' -Value 0 -Force
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' -Name 'Start_TrackEnabled' -Value 0 -Force
 
         # Disable Windows Event logs
         Stop-Service -Name EventLog -Force 2>$null
         Set-Service EventLog -StartupType Disabled
 
         # Clean Windows Event logs
-        wevtutil el | Foreach-Object { wevtutil cl "$_" } 2>$null
+        wevtutil el | ForEach-Object { wevtutil cl "$_" } 2>$null
 
         # Clean Windows logs
         Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log } 2>$null
@@ -152,13 +181,12 @@ function anti {
     Exit 0
 }
 
-
-function tools {
-
+function Install-Tools {
     Write-Output '[+] Tools Script'
-    New-Item -Path "$HOME" -Name "Tools" -ItemType Directory >$null
+    $toolsDirectory = "$HOME\Tools"
+    New-Item -Path $toolsDirectory -ItemType Directory -Force >$null
 
-    # Download and install some programs
+    # URLs of tools to download
     $FastURL = [ordered]@{
         DSP         = "https://github.com/LloydLabs/delete-self-poc/releases/download/v1.1/ds_x64.exe"
         Exif        = "https://www.two-pilots.com/colorpilot.com/load/exif_64.exe"
@@ -169,7 +197,7 @@ function tools {
 
     foreach ($key in $FastURL.Keys) {
         $url = $FastURL[$key]
-        $outputPath = "$Home\Tools\$key"
+        $outputPath = "$toolsDirectory\$key.exe"
 
         try {
             Invoke-WebRequest -Uri $url -OutFile $outputPath -ErrorAction Stop
@@ -180,18 +208,17 @@ function tools {
         }
     }
 
-
     $LongURL = [ordered]@{
         Bleachbit = "https://www.bleachbit.org/download/file/t?file=BleachBit-4.6.0-portable.zip"
         Buskill   = "https://github.com/BusKill/buskill-app/releases/download/v0.7.0/buskill-win-v0.7.0-x86_64.zip"
-        Clamav    = "https://www.clamav.net/downloads/production/clamav-1.1.1.win.x64.zip"
+        Clamav    = "https://www.clamav.net/downloads/production/clamav-1.3.1.win.x64.zip"
         Sdelete   = "https://download.sysinternals.com/files/SDelete.zip"
     }
 
     foreach ($key in $LongURL.Keys) {
         $url = $LongURL[$key]
         $downloadPath = "$Home\Downloads\$key.zip"
-        $extractPath = "$Home\Tools\$key"
+        $extractPath = "$toolsDirectory\$key"
 
         try {
             Invoke-WebRequest -Uri $url -OutFile $downloadPath -ErrorAction Stop
@@ -205,8 +232,8 @@ function tools {
     }
 }
 
-function usage {
-    Write-Output "
+function Show-Usage {
+   Write-Output "
     ██╗    ██╗ █████╗ ███████╗███████╗
     ██║    ██║██╔══██╗██╔════╝██╔════╝
     ██║ █╗ ██║███████║█████╗  ███████╗
@@ -214,37 +241,39 @@ function usage {
     ╚███╔███╔╝██║  ██║██║     ███████║
     ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝     ╚══════╝
 
+
     Windows Anti-Forensics Script
 
     Syntax: wafs.ps1 -[all|anti|tools]
     options:
     -all                Install both features.
-    -anti               Disable and clear certains windows features and parameters for anti-forensics.
+    -anti               Disable and clear certain windows features and parameters for anti-forensics.
     -tools              Install anti-forensics tools.
     "
 }
 
-function main {
+function Main {
     if ($all) {
         Start-Transcript -Path ".\logs_all.txt"
-        tools
-        anti
+        Install-Tools
+        Invoke-AntiForensics
         Stop-Transcript
     }
     elseif ($anti) {
         Start-Transcript -Path ".\logs_anti.txt"
-        anti
+        Invoke-AntiForensics
         Stop-Transcript
     }
     elseif ($tools) {
         Start-Transcript -Path ".\logs_tools.txt"
-        tools
+        Install-Tools
         Write-Output '[+] Done, reboot your system'
         Exit 0
         Stop-Transcript
     }
     else {
-        usage
+        Show-Usage
     }
 }
-main
+
+Main
