@@ -192,7 +192,7 @@ function Install-Tools {
         Exif        = "https://www.two-pilots.com/colorpilot.com/load/exif_64.exe"
         Timestomper = "https://github.com/slyd0g/TimeStomper/blob/master/Release/TimeStomper.exe"
         USBSentinel = "https://github.com/thereisnotime/xxUSBSentinel/releases/download/v1/xxUSBSentinel.exe"
-        Veracrypt   = "https://kumisystems.dl.sourceforge.net/project/veracrypt/VeraCrypt%201.26.7/Windows/VeraCrypt%20Setup%201.26.7.exe"
+        Veracrypt   = "https://launchpad.net/veracrypt/trunk/1.26.15/+download/VeraCrypt%20Setup%201.26.15.exe"
     }
 
     foreach ($key in $FastURL.Keys) {
@@ -211,7 +211,7 @@ function Install-Tools {
     $LongURL = [ordered]@{
         Bleachbit = "https://www.bleachbit.org/download/file/t?file=BleachBit-4.6.0-portable.zip"
         Buskill   = "https://github.com/BusKill/buskill-app/releases/download/v0.7.0/buskill-win-v0.7.0-x86_64.zip"
-        Clamav    = "https://www.clamav.net/downloads/production/clamav-1.3.1.win.x64.zip"
+        Clamav    = "https://www.clamav.net/downloads/production/clamav-1.4.1.win.x64.zip"
         Sdelete   = "https://download.sysinternals.com/files/SDelete.zip"
     }
 
