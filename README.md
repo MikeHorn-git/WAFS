@@ -31,6 +31,9 @@ options:
 -all                Install both features.
 -anti               Disable and clear certains windows features and parameters for anti-forensics.
 -tools              Install anti-forensics tools.
+-disable            Only disable windows features without cleaning
+-clean              Only clean
+
 ```
 
 # Features
