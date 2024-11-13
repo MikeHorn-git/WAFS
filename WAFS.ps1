@@ -58,12 +58,15 @@
 param (
     [switch]$all,
     [switch]$anti,
-    [switch]$tools
+    [switch]$tools,
+    [switch]$clean,
+    [switch]$disable
 )
 
 function Invoke-AntiForensics {
     Write-Output '[+] Anti-Forensics Script'
 
+    # Cleaning
     $PathsToRemove = @{
         'ChromeCache'           = "$Home\AppData\Local\Google\Chrome\User Data\Default\Cache"
         'ChromeHistory'         = "$Home\AppData\Local\Google\Chrome\User Data\Default\History"
@@ -113,6 +116,7 @@ function Invoke-AntiForensics {
         }
     }
 
+    # Disable 
     try {
         # Disable Audit Success logs
         auditpol /set /subcategory:"Filtering Platform Connection" /success:disable /failure:enable 2>$null
@@ -181,6 +185,135 @@ function Invoke-AntiForensics {
     Exit 0
 }
 
+function Invoke-Cleaning {
+    
+    Write-Output '[+] Anti-Forensics Script - Cleaning'
+    
+    $PathsToRemove = @{
+        'ChromeCache'                   = "$Home\AppData\Local\Google\Chrome\User Data\Default\Cache"
+        'ChromeHistory'                 = "$Home\AppData\Local\Google\Chrome\User Data\Default\History"
+        'ChromeSessionRestore'          = "$Home\AppData\Local\Google\Chrome\User Data\Default"
+        'EdgeCache'                     = "$Home\AppData\Local\Packages\microsoft.microsoftedge_*\AC\MicrosoftEdge\Cache"
+        'IEHistory'                     = 'HKCU:\Software\Microsoft\Internet Explorer\TypedURLs'
+        'IEWebCache'                    = "$Home\AppData\Local\Microsoft\Windows\WebCache\WebCacheV*.dat"
+        'FirefoxCache'                  = "$Home\AppData\Local\Mozilla\Firefox\Profiles\*.default\Cache"
+        'FirefoxHistory'                = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default*\places.sqlite"
+        'FirefoxHistoryBackup'          = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default*\places.sqlite-*"
+        'FirefoxBookmarks'              = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default*\bookmarkbackups\*"
+        'FirefoxSessionRestore'         = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default*\sessionstore.js"
+        'FirefoxSessionRestoreBackup'   = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default*\sessionstore-backups\*"
+        'FirefoxCookies'                = "$Home\AppData\Roaming\Mozilla\Firefox\Profiles\*.default*\cookies.sqlite*"
+        'IECache'                       = "$Home\AppData\Local\Microsoft\Windows\INetCache\IE"
+        'IECacheStorage'                = "$Home\AppData\Local\Microsoft\Internet Explorer\CacheStorage"
+        'IESessionRestore'              = "$Home\AppData\Local\Microsoft\Internet Explorer\Recovery"
+        'LastVisitedMRU'                = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU'
+        'OpenSaveMRU'                   = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU'
+        'PlugAndPlayLogs'               = "C:\Windows\INF\setupapi.dev*"
+        'Prefetch'                      = "C:\Windows\Prefetch"
+        'RecentItems'                   = "$HOME\AppData\Roaming\Microsoft\Windows\Recent"
+        'RecentDocs'                    = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs'
+        'RunMRU'                        = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU'
+        'ShadowCopies'                  = 'HKLM:\SYSTEM\CurrentControlSet\Control\BackupRestore\FilesNotToBackup'
+        'ShellBags'                     = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell'
+        'ShellNoRoam'                   = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\ShellNoRoam'
+        'ShellWow6432'                  = 'HKCU:\Software\Classes\Wow6432Node\Local Settings\Software\Microsoft\Windows\Shell\'
+        'Simcache'                      = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache\'
+        'SRUDB'                         = "C:\Windows\System32\sru\SRUDB.dat"
+        'TempFiles'                     = "C:\Windows\temp\*"
+        'Thumbcache'                    = "$Home\AppData\Local\Microsoft\Windows\Explorer\thumbcache*.db\"
+        'USBHistory'                    = 'HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR'
+        'USBEnum'                       = 'HKLM:\SYSTEM\CurrentControlSet\Enum\USB'
+        'UserAssist'                    = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\'
+        'VPNCache'                      = 'HKLM:\Microsoft\Windows NT\CurrentVersion\NetworkList\Nla\Cache'
+        'TimelineDB'                    = "$Home\AppData\Local\ConnectedDevicesPlatform\*\ActivitiesCache.db"
+        'PowerShellHistory'             = "$HOME\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
+    }
+
+    foreach ($pathKey in $PathsToRemove.Keys) {
+        $path = $PathsToRemove[$pathKey]
+        if ($null -ne $path) {
+            try {
+                Remove-Item -Path $path -Recurse -Force -ErrorAction Stop
+                Write-Output "Removed: $path"
+            }
+            catch {
+                Write-Error "Failed to remove: $path. Error: $_"
+            }
+        }
+    }
+}
+
+function Invoke-Disable {
+    Write-Output '[+] Anti-Forensics Script - Disable'
+    try {
+        # Disable Audit Success logs
+        auditpol /set /subcategory:"Filtering Platform Connection" /success:disable /failure:enable 2>$null
+
+        # Remove Cortana
+        Get-AppxPackage -AllUsers Microsoft.549981C3F5F10 | Remove-AppPackage 2>$null
+
+        # Clean DNS cache
+        ipconfig /flushdns >$null
+
+        # Disable Keylogger
+        Stop-Service -Name DiagTrack -Force 2>$null
+        Set-Service -Name DiagTrack -StartupType Disabled 2>$null
+        Stop-Service -Name dmwappushservice -Force 2>$null
+        Set-Service -Name dmwappushservice -StartupType Disabled 2>$null
+        Write-Output "" > C:\ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl 2>$null
+
+        # Disable NTFS Last Access Time
+        Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'NtfsDisableLastAccessUpdate' -Value 1 -Force
+        fsutil behavior set disablelastaccess 3 >$null
+
+        # Disable Prefetch
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' -Name 'EnablePrefetcher' -Value 0 -Force
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' -Name 'EnableSuperfetch' -Value 0 -Force
+
+        # Clean RecycleBin
+        Clear-RecycleBin -Force 2>$null
+
+        # Disable previous Shadow Copies
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\' -Name 'DisableLocalPage' -Value 1 -Force
+
+        # Clean Shadow Copies
+        vssadmin delete shadows /All >$null
+
+        # Disable ShellBags
+        Set-ItemProperty -Path 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell' -Name 'BagMRU Size' -Value 1 -Force
+
+        # Disable UserAssist
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' -Name 'Start_TrackProgs' -Value 0 -Force
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\' -Name 'Start_TrackEnabled' -Value 0 -Force
+
+        # Disable Windows Event logs
+        Stop-Service -Name EventLog -Force 2>$null
+        Set-Service EventLog -StartupType Disabled
+
+        # Clean Windows Event logs
+        wevtutil el | ForEach-Object { wevtutil cl "$_" } 2>$null
+
+        # Clean Windows logs
+        Get-EventLog -LogName * | ForEach-Object { Clear-EventLog $_.Log } 2>$null
+
+        # Disable Windows Timeline DB
+        Stop-Service -Name CDPUserSvc* -Force 2>$null
+
+        # Disable $UsnJrnl
+        fsutil usn deletejournal /d c: 2>$null
+
+        # Clean Powershell history
+        Clear-History 2>$null
+    }
+    catch {
+        Write-Error "An error occurred: $_"
+    }
+
+    Write-Output '[+] Done, reboot your system'
+    Exit 0
+
+}
+
 function Install-Tools {
     Write-Output '[+] Tools Script'
     $toolsDirectory = "$HOME\Tools"
@@ -209,7 +342,7 @@ function Install-Tools {
     }
 
     $LongURL = [ordered]@{
-        Bleachbit = "https://www.bleachbit.org/download/file/t?file=BleachBit-4.6.0-portable.zip"
+        Bleachbit = "https://download.bleachbit.org/BleachBit-4.6.2-portable.zip"
         Buskill   = "https://github.com/BusKill/buskill-app/releases/download/v0.7.0/buskill-win-v0.7.0-x86_64.zip"
         Clamav    = "https://www.clamav.net/downloads/production/clamav-1.4.1.win.x64.zip"
         Sdelete   = "https://download.sysinternals.com/files/SDelete.zip"
@@ -233,7 +366,7 @@ function Install-Tools {
 }
 
 function Show-Usage {
-   Write-Output "
+   Write-Host @"
     ██╗    ██╗ █████╗ ███████╗███████╗
     ██║    ██║██╔══██╗██╔════╝██╔════╝
     ██║ █╗ ██║███████║█████╗  ███████╗
@@ -249,7 +382,9 @@ function Show-Usage {
     -all                Install both features.
     -anti               Disable and clear certain windows features and parameters for anti-forensics.
     -tools              Install anti-forensics tools.
-    "
+    -disable            Only disable windows features without cleaning
+    -clean              Only clean
+"@
 }
 
 function Main {
@@ -269,6 +404,16 @@ function Main {
         Install-Tools
         Write-Output '[+] Done, reboot your system'
         Exit 0
+        Stop-Transcript
+    }
+    elseif ($clean) {
+        Start-Transcript -Path ".\logs_clean.txt"
+        Invoke-Cleaning
+        Stop-Transcript
+    }
+    elseif ($disable) {
+        Start-Transcript -Path ".\logs_disable.txt"
+        Invoke-Disable
         Stop-Transcript
     }
     else {
