@@ -38,10 +38,24 @@
       2) Execute the script by running ".\WAFS.ps1"
 
     .PARAMETER all
-    Current user password to allow reboot resiliency via Boxstarter. The script prompts for the password if not provided.
+    Install both features: tools and perform anti-forensics actions including disabling certain windows features and clearing
+    certain data. This includes the cleaning of various file and registry data.
 
     .PARAMETER anti
-    Switch parameter indicating a password is not needed for reboots.
+    Perform anti-forensics actions without requiring tools installation. This includes disabling certain windows features and
+    clearing various forensics-related data, such as browser caches, event logs, and session histories.
+
+    .PARAMETER tools
+    Install anti-forensics tools. This downloads various tools that can be used to enhance anti-forensics activities.
+    No other actions are performed with this option.
+
+    .PARAMETER clean
+    Perform only the cleaning actions. This will clean up various files, caches, and registry entries that may be used in
+    forensic investigations but will not disable any Windows features or services.
+
+    .PARAMETER disable
+    Only disable certain Windows features without performing any cleaning actions. This includes disabling services like
+    EventLog, Prefetch, and Shadow Copies, as well as disabling keylogging and other Windows telemetry features.
 
     .EXAMPLE
     .\WAFS.ps1 -anti
@@ -116,7 +130,7 @@ function Invoke-AntiForensics {
         }
     }
 
-    # Disable 
+    # Disable
     try {
         # Disable Audit Success logs
         auditpol /set /subcategory:"Filtering Platform Connection" /success:disable /failure:enable 2>$null
@@ -186,9 +200,9 @@ function Invoke-AntiForensics {
 }
 
 function Invoke-Cleaning {
-    
+
     Write-Output '[+] Anti-Forensics Script - Cleaning'
-    
+
     $PathsToRemove = @{
         'ChromeCache'                   = "$Home\AppData\Local\Google\Chrome\User Data\Default\Cache"
         'ChromeHistory'                 = "$Home\AppData\Local\Google\Chrome\User Data\Default\History"
